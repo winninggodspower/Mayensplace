@@ -21,4 +21,12 @@
     .feature{
         @apply relative bg-white px-6 py-7 rounded-[10px] max-w-[400px] shadow-[0px_0px_20px_10px_rgba(0,0,0,0.08)] h-full after:end-full hover:after:end-0 after:absolute after:bg-green-400 after:h-1 after:bottom-0 after:start-0 after:rounded after:transition-all after:duration-300 after:shadow-[0_0_10px_rgba(0,255,0,0.5)];
     }
+
+    .input{
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5;
+    }
+
+    .label{
+        @apply block mb-2 text-sm font-medium text-gray-900;
+    }
 }

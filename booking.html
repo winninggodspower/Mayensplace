@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Event Space</title>
+    <link rel="stylesheet" href="./static/css/output.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-slate-100">
+
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl sm:text-5xl font-bold mb-6">Book Your Event Space</h2>
+            <p class="text-gray-600">$400 per hour - Make your event memorable</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <ol class="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base mb-4">
+            <li id="step-1" class="flex md:w-full items-center text-green-500 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
+                <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                    </svg>
+                    Date
+                </span>
+            </li>
+            <li id="step-2" class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
+                <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+                    <span class="me-2">2</span>
+                    Details 
+                </span>
+            </li>
+            <li id="step-3" class="flex items-center">
+                <span class="me-2">3</span>
+                Payment
+            </li>
+        </ol>
+
+
+        <!-- Booking Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 py-16">
+            <!-- Step 1: Date and Time Selection -->
+            <div id="booking-step-1" class="space-y-6">
+                <div>
+                    <label for="date" class="label">Select Date</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                            </svg>
+                        </div>
+                        <input datepicker type="date" id="date" class="input block w-full pl-10 p-2.5" placeholder="Select date">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="start-time" class="label">Start Time</label>
+                        <select id="start-time" class="input">
+                            <option selected>Choose a time</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="end-time" class="label">End Time</label>
+                        <select id="end-time" class="input">
+                            <option selected>Choose a time</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="price-display" class="hidden p-4 bg-gray-100 rounded-lg">
+                    <p class="text-lg font-bold">Total Price: $<span id="total-price">0</span></p>
+                    <p class="text-sm text-gray-600">$400 per hour × <span id="total-hours">0</span> hours</p>
+                </div>
+
+                <button type="button" id="step-1-next" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Continue to Details</button>
+            </div>
+
+            <!-- Step 2: Personal Details -->
+            <div id="booking-step-2" class="hidden space-y-6">
+                <div>
+                    <label for="name" class="label">Full Name</label>
+                    <input type="text" id="name" class="input" required>
+                </div>
+                <div>
+                    <label for="email" class="label">Email Address</label>
+                    <input type="email" id="email" class="input" required>
+                </div>
+                <div>
+                    <label for="phone" class="label">Phone Number</label>
+                    <input type="tel" id="phone" class="input" required>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" id="step-2-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
+                    <button type="button" id="step-2-next" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Continue to Payment</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Payment -->
+            <div id="booking-step-3" class="hidden space-y-6">
+                <div class="p-4 bg-gray-100 rounded-lg space-y-2">
+                    <h3 class="font-medium">Booking Summary</h3>
+                    <div class="text-sm text-gray-600">
+                        <p>Date: <span id="summary-date"></span></p>
+                        <p>Time: <span id="summary-time"></span></p>
+                        <p>Total: $<span id="summary-price"></span></p>
+                    </div>
+                </div>
+
+                <div id="payment-element">
+                    <!-- Stripe Elements will be inserted here -->
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" id="step-3-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
+                    <button type="button" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Pay Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="./scripts/payment.js"></script>
+</body>
+</html>
