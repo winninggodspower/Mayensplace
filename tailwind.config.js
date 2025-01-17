@@ -6,7 +6,11 @@ module.exports = {
     "index.html"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'playfairDisplay': '"Playfair Display", serif'
+      }
+    },
   },
   plugins: [
     require('flowbite/plugin')
