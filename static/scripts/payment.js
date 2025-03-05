@@ -1,3 +1,5 @@
+PRICE_PER_HOUR = 200;
+
 // Initialize time options
 function initializeTimeOptions() {
     const startTime = document.getElementById('start-time');
@@ -17,16 +19,23 @@ function calculatePrice() {
     const startTime = document.getElementById('start-time').value;
     const endTime = document.getElementById('end-time').value;
 
-    if (startTime && endTime) {
+    console.log(startTime, endTime);
+    
+
+    if (startTime && endTime && /^\d{2}:\d{2}$/.test(startTime) && /^\d{2}:\d{2}$/.test(endTime)) {
         const start = parseInt(startTime.split(':')[0]);
         const end = parseInt(endTime.split(':')[0]);
         if (end > start) {
             const hours = end - start;
-            const price = hours * 400;
+            const price = hours * PRICE_PER_HOUR;
             document.getElementById('total-price').textContent = price;
             document.getElementById('total-hours').textContent = hours;
             document.getElementById('price-display').classList.remove('hidden');
             return price;
+        }
+        else{
+            alert('End time cannot be earlier than start time');
+            return 0;
         }
     }
     document.getElementById('price-display').classList.add('hidden');
@@ -82,28 +91,31 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('start-time').addEventListener('change', calculatePrice);
     document.getElementById('end-time').addEventListener('change', calculatePrice);
 
-    // Navigation buttons
-    document.getElementById('step-1-next').addEventListener('click', () => {
-        const date = document.getElementById('date').value;
-        const startTime = document.getElementById('start-time').value;
-        const endTime = document.getElementById('end-time').value;
-        const price = calculatePrice();
-
-        if (date && startTime && endTime && price > 0) {
-            showStep(2);
-        } else {
-            alert('Please fill in all fields');
-        }
-    });
-
-    document.getElementById('step-2-prev').addEventListener('click', () => showStep(1));
-    document.getElementById('step-2-next').addEventListener('click', () => {
+    // Form submissions
+    document.getElementById('booking-step-1').onsubmit = function(event) {
+        event.preventDefault();
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
 
         if (name && email && phone) {
-            // Update summary
+            showStep(2);
+        } else {
+            alert('Please fill in all fields');
+        }
+    };
+
+    document.getElementById('booking-step-2').onsubmit = function(event) {
+        event.preventDefault();
+        const date = document.getElementById('date').value;
+        const startTime = document.getElementById('start-time').value;
+        const endTime = document.getElementById('end-time').value;
+        const price = calculatePrice();
+
+        console.log(date, startTime, endTime, price);
+        
+
+        if (date && startTime && endTime && price > 0) {
             document.getElementById('summary-date').textContent = document.getElementById('date').value;
             document.getElementById('summary-time').textContent = 
                 `${document.getElementById('start-time').value} - ${document.getElementById('end-time').value}`;
@@ -116,12 +128,19 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             alert('Please fill in all fields');
         }
-    });
+    };
 
-    document.getElementById('step-3-prev').addEventListener('click', () => showStep(2));
+    document.getElementById('step-2-prev').onclick = function() {
+        showStep(1);
+    };
+
+    document.getElementById('step-3-prev').onclick = function() {
+        showStep(2);
+    };
 
     // Payment submission
-    document.getElementById('pay-button').addEventListener('click', async () => {
+    document.getElementById('booking-step-3').onsubmit = async function(event) {
+        event.preventDefault();
         try {
             const { error } = await stripe.confirmPayment({
                 elements,
@@ -138,5 +157,5 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', e);
             alert('An error occurred during payment');
         }
-    });
+    };
 });

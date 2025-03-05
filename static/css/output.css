@@ -1321,6 +1321,10 @@ h1, h2, h3, h4, h5{
   margin-top: 51px;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .block {
   display: block;
 }
@@ -1507,6 +1511,14 @@ h1, h2, h3, h4, h5{
 
 .resize {
   resize: both;
+}
+
+.list-inside {
+  list-style-position: inside;
+}
+
+.list-disc {
+  list-style-type: disc;
 }
 
 .grid-cols-1 {

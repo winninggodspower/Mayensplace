@@ -13,7 +13,7 @@
 
     <div class="mb-8 text-center">
         <h2 class="text-3xl sm:text-5xl font-bold mb-6">Book Your Event Space</h2>
-        <p class="text-gray-600">$400 per hour - Make your event memorable</p>
+        <p class="text-gray-600">$200 per hour - Make your event memorable</p>
     </div>
 
     <!-- Progress Steps -->
@@ -23,13 +23,13 @@
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
                 </svg>
-                Date
+                Personal Details
             </span>
         </li>
         <li id="step-2" class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
             <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
                 <span class="me-2">2</span>
-                Details 
+                Evelnt Details 
             </span>
         </li>
         <li id="step-3" class="flex items-center">
@@ -40,8 +40,43 @@
 
     <!-- Booking Form -->
     <div class="bg-white rounded-lg shadow-md p-6 py-16">
-        <!-- Step 1: Date and Time Selection -->
-        <div id="booking-step-1" class="space-y-6">
+
+        <!-- Step 1: Personal Details -->
+        <form id="booking-step-1" class="space-y-6">
+            <div>
+                <label for="name" class="label">Full Name</label>
+                <input type="text" id="name" class="input" required>
+            </div>
+            <div>
+                <label for="organization" class="label">Organization (if applicable)</label>
+                <input type="text" id="organization" class="input">
+            </div>
+            <div>
+                <label for="address" class="label">Address</label>
+                <input type="text" id="address" class="input" required>
+            </div>
+            <div>
+                <label for="email" class="label">Email Address</label>
+                <input type="email" id="email" class="input" required>
+            </div>
+            <div>
+                <label for="phone" class="label">Phone Number</label>
+                <input type="tel" id="phone" class="input" required>
+            </div>
+
+            <button type="submit" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Continue to Details</button>
+        </form>
+
+         <!-- Step 2: Date and Time Selection -->
+         <form id="booking-step-2" class="hidden space-y-6">
+            <div>
+                <label for="event-name" class="label">Event Name</label>
+                <input type="text" id="event-name" class="input" required>
+            </div>
+            <div>
+                <label for="event-type" class="label">Event Type (Wedding, Conference, Party, etc.)</label>
+                <input type="text" id="event-type" class="input" required>
+            </div>
             <div>
                 <label for="date" class="label">Select Date</label>
                 <div class="relative">
@@ -69,37 +104,29 @@
                 </div>
             </div>
 
+            <div>
+                <label for="guest-count" class="label">Estimated Guest Count</label>
+                <input type="number" id="guest-count" class="input" required>
+            </div>
+
+            <div>
+                <label for="additional-services" class="label">Additional Services Required (Catering, Audio/Visual, etc.)</label>
+                <textarea id="additional-services" class="input" rows="3"></textarea>
+            </div>
+
             <div id="price-display" class="hidden p-4 bg-gray-100 rounded-lg">
                 <p class="text-lg font-bold">Total Price: $<span id="total-price">0</span></p>
-                <p class="text-sm text-gray-600">$400 per hour × <span id="total-hours">0</span> hours</p>
-            </div>
-
-            <button type="button" id="step-1-next" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Continue to Details</button>
-        </div>
-
-        <!-- Step 2: Personal Details -->
-        <div id="booking-step-2" class="hidden space-y-6">
-            <div>
-                <label for="name" class="label">Full Name</label>
-                <input type="text" id="name" class="input" required>
-            </div>
-            <div>
-                <label for="email" class="label">Email Address</label>
-                <input type="email" id="email" class="input" required>
-            </div>
-            <div>
-                <label for="phone" class="label">Phone Number</label>
-                <input type="tel" id="phone" class="input" required>
+                <p class="text-sm text-gray-600">$200 per hour × <span id="total-hours">0</span> hours</p>
             </div>
 
             <div class="flex gap-4">
                 <button type="button" id="step-2-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
-                <button type="button" id="step-2-next" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Continue to Payment</button>
+                <button type="submit" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Continue to Payment</button>
             </div>
-        </div>
+        </form>
 
         <!-- Step 3: Payment -->
-        <div id="booking-step-3" class="hidden space-y-6">
+        <form id="booking-step-3" class="hidden space-y-6">
             <div class="p-4 bg-gray-100 rounded-lg space-y-2">
                 <h3 class="font-medium">Booking Summary</h3>
                 <div class="text-sm text-gray-600">
@@ -109,20 +136,30 @@
                 </div>
             </div>
 
+            <div>
+                <input type="checkbox" id="accept-terms" class="mr-2" required>
+                <label for="accept-terms">I accept the <a href="/rental-terms" class="text-green-500 underline">rental terms and conditions</a></label>
+            </div>
+
             <div id="payment-element">
                 <!-- Stripe Elements will be inserted here -->
             </div>
 
             <div class="flex gap-4">
                 <button type="button" id="step-3-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
-                <button type="button" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Pay Now</button>
+                <button type="submit" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" >Pay Now</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="{{ url_for('static', filename="scripts/payment.js") }}"></script>
+    <script src="{{ url_for('static', filename='scripts/payment.js') }}"></script>
+    <script>
+        document.getElementById('accept-terms').addEventListener('change', function() {
+            document.getElementById('pay-button').disabled = !this.checked;
+        });
+    </script>
 {% endblock %}
