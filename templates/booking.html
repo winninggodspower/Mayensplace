@@ -4,6 +4,7 @@
 
 {% block extra_head %}
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID"></script>
 {% endblock %}
 
 {% block content %}
@@ -29,7 +30,7 @@
         <li id="step-2" class="flex md:w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700">
             <span class="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
                 <span class="me-2">2</span>
-                Evelnt Details 
+                Event Details 
             </span>
         </li>
         <li id="step-3" class="flex items-center">
@@ -145,9 +146,11 @@
                 <!-- Stripe Elements will be inserted here -->
             </div>
 
+            <div id="paypal-button-container"></div>
+
             <div class="flex gap-4">
                 <button type="button" id="step-3-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
-                <button type="submit" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" >Pay Now</button>
+                <button type="submit" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" disabled>Pay Now</button>
             </div>
         </form>
     </div>
@@ -161,5 +164,23 @@
         document.getElementById('accept-terms').addEventListener('change', function() {
             document.getElementById('pay-button').disabled = !this.checked;
         });
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: document.getElementById('summary-price').textContent
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    window.location.href = '/booking-confirmation';
+                });
+            }
+        }).render('#paypal-button-container');
     </script>
 {% endblock %}

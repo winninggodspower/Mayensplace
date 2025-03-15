@@ -83,6 +83,29 @@ async function initializePayment(amount) {
     }
 }
 
+// Initialize PayPal
+paypal.Buttons({
+    createOrder: function(data, actions) {
+        return actions.order.create({
+            purchase_units: [{
+                amount: {
+                    value: document.getElementById('total-price').textContent
+                }
+            }]
+        });
+    },
+    onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+            alert('Transaction completed by ' + details.payer.name.given_name);
+            window.location.href = '/booking-confirmation';
+        });
+    },
+    onError: function(err) {
+        console.error('PayPal error:', err);
+        alert('An error occurred during payment');
+    }
+}).render('#paypal-button-container');
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     initializeTimeOptions();
