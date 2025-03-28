@@ -46,23 +46,23 @@
         <form id="booking-step-1" class="space-y-6">
             <div>
                 <label for="name" class="label">Full Name</label>
-                <input type="text" id="name" class="input" required>
+                <input type="text" id="name" class="input" placeholder="Enter your full name" required>
             </div>
             <div>
                 <label for="organization" class="label">Organization (if applicable)</label>
-                <input type="text" id="organization" class="input">
+                <input type="text" id="organization" class="input" placeholder="Enter your organization name">
             </div>
             <div>
                 <label for="address" class="label">Address</label>
-                <input type="text" id="address" class="input" required>
+                <input type="text" id="address" class="input" placeholder="Enter your address" required>
             </div>
             <div>
                 <label for="email" class="label">Email Address</label>
-                <input type="email" id="email" class="input" required>
+                <input type="email" id="email" class="input" placeholder="Enter your email address" required>
             </div>
             <div>
                 <label for="phone" class="label">Phone Number</label>
-                <input type="tel" id="phone" class="input" required>
+                <input type="tel" id="phone" class="input" placeholder="Enter your phone number" required>
             </div>
 
             <button type="submit" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Continue to Details</button>
@@ -72,11 +72,11 @@
          <form id="booking-step-2" class="hidden space-y-6">
             <div>
                 <label for="event-name" class="label">Event Name</label>
-                <input type="text" id="event-name" class="input" required>
+                <input type="text" id="event-name" class="input" placeholder="Enter the event name" required>
             </div>
             <div>
                 <label for="event-type" class="label">Event Type (Wedding, Conference, Party, etc.)</label>
-                <input type="text" id="event-type" class="input" required>
+                <input type="text" id="event-type" class="input" placeholder="Enter the event type" required>
             </div>
             <div>
                 <label for="date" class="label">Select Date</label>
@@ -107,12 +107,12 @@
 
             <div>
                 <label for="guest-count" class="label">Estimated Guest Count</label>
-                <input type="number" id="guest-count" class="input" required>
+                <input type="number" id="guest-count" class="input" placeholder="Enter the number of guests" required>
             </div>
 
             <div>
                 <label for="additional-services" class="label">Additional Services Required (Catering, Audio/Visual, etc.)</label>
-                <textarea id="additional-services" class="input" rows="3"></textarea>
+                <textarea id="additional-services" class="input" rows="3" placeholder="Enter additional services required"></textarea>
             </div>
 
             <div id="price-display" class="hidden p-4 bg-gray-100 rounded-lg">
@@ -127,7 +127,7 @@
         </form>
 
         <!-- Step 3: Payment -->
-        <form id="booking-step-3" class="hidden space-y-6">
+        <form id="booking-step-3" method="POST" action="/process-payment" class="hidden space-y-6">
             <div class="p-4 bg-gray-100 rounded-lg space-y-2">
                 <h3 class="font-medium">Booking Summary</h3>
                 <div class="text-sm text-gray-600">
@@ -142,6 +142,10 @@
                 <label for="accept-terms">I accept the <a href="/rental-terms" class="text-green-500 underline">rental terms and conditions</a></label>
             </div>
 
+            <input type="hidden" name="total_price" id="hidden-total-price">
+            <input type="hidden" name="event_date" id="hidden-event-date">
+            <input type="hidden" name="event_time" id="hidden-event-time">
+
             <div id="payment-element">
                 <!-- Stripe Elements will be inserted here -->
             </div>
@@ -150,7 +154,7 @@
 
             <div class="flex gap-4">
                 <button type="button" id="step-3-prev" class="w-full text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">Previous</button>
-                <button type="submit" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5" disabled>Pay Now</button>
+                <button type="submit" id="pay-button" class="w-full text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">Pay Now</button>
             </div>
         </form>
     </div>
@@ -158,29 +162,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="{{ url_for('static', filename='scripts/payment.js') }}"></script>
-    <script>
-        document.getElementById('accept-terms').addEventListener('change', function() {
-            document.getElementById('pay-button').disabled = !this.checked;
-        });
-
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: document.getElementById('summary-price').textContent
-                        }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    alert('Transaction completed by ' + details.payer.name.given_name);
-                    window.location.href = '/booking-confirmation';
-                });
-            }
-        }).render('#paypal-button-container');
-    </script>
+<script src="{{ url_for('static', filename='scripts/payment.js') }}"></script>
 {% endblock %}

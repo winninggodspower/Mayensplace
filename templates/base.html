@@ -15,6 +15,19 @@
     {% endblock %}
 </head>
 <body class="bg-slate-100 scroll-smooth">
+    <!-- Alert System -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="fixed top-0 right-0 m-4 z-50 space-y-4">
+        {% for category, message in messages %}
+        <div class="p-4 rounded-lg shadow-lg text-white {% if category == 'success' %}bg-green-500{% elif category == 'danger' %}bg-red-500{% elif category == 'warning' %}bg-yellow-500{% else %}bg-gray-500{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     {% block content %}
     {% endblock %}
 

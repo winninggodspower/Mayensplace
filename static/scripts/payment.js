@@ -4,23 +4,35 @@ PRICE_PER_HOUR = 200;
 function initializeTimeOptions() {
     const startTime = document.getElementById('start-time');
     const endTime = document.getElementById('end-time');
-    
-    for(let i = 0; i < 24; i++) {
+
+    for (let i = 0; i < 24; i++) {
         const hour = i.toString().padStart(2, '0') + ':00';
         const startOption = new Option(hour, hour);
-        const endOption = new Option(hour, hour);
         startTime.add(startOption);
-        endTime.add(endOption);
     }
+
+    startTime.addEventListener('change', function () {
+        const selectedStartTime = startTime.value;
+        endTime.innerHTML = ''; // Clear existing options
+
+        if (selectedStartTime) {
+            const startHour = parseInt(selectedStartTime.split(':')[0]);
+            for (let i = startHour + 1; i < 24; i++) {
+                const hour = i.toString().padStart(2, '0') + ':00';
+                const endOption = new Option(hour, hour);
+                endTime.add(endOption);
+            }
+        } else {
+            const defaultOption = new Option('Choose a time', '', true, true);
+            endTime.add(defaultOption);
+        }
+    });
 }
 
 // Calculate total price
 function calculatePrice() {
     const startTime = document.getElementById('start-time').value;
     const endTime = document.getElementById('end-time').value;
-
-    console.log(startTime, endTime);
-    
 
     if (startTime && endTime && /^\d{2}:\d{2}$/.test(startTime) && /^\d{2}:\d{2}$/.test(endTime)) {
         const start = parseInt(startTime.split(':')[0]);
@@ -32,8 +44,7 @@ function calculatePrice() {
             document.getElementById('total-hours').textContent = hours;
             document.getElementById('price-display').classList.remove('hidden');
             return price;
-        }
-        else{
+        } else {
             alert('End time cannot be earlier than start time');
             return 0;
         }
@@ -50,7 +61,7 @@ function showStep(step) {
     document.getElementById(`booking-step-${step}`).classList.remove('hidden');
 
     // Update progress indicators
-    for(let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 3; i++) {
         const stepElement = document.getElementById(`step-${i}`);
         if (i < step) {
             stepElement.classList.add('text-green-500');
@@ -62,52 +73,57 @@ function showStep(step) {
     }
 }
 
-// Initialize Stripe
-const stripe = Stripe('your_publishable_key'); // Replace with your Stripe publishable key
-let elements;
-
 async function initializePayment(amount) {
     try {
-        const response = await fetch('/create-payment-intent', {
+        const name = document.getElementById('name').value;
+        const organization = document.getElementById('organization').value;
+        const address = document.getElementById('address').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const eventName = document.getElementById('event-name').value;
+        const eventType = document.getElementById('event-type').value;
+        const eventDate = document.getElementById('date').value;
+        const startTime = document.getElementById('start-time').value;
+        const endTime = document.getElementById('end-time').value;
+        const guestCount = document.getElementById('guest-count').value;
+        const additionalServices = document.getElementById('additional-services').value;
+
+        const response = await fetch('/process-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount })
+            body: JSON.stringify({
+                name,
+                organization,
+                address,
+                email,
+                phone,
+                event_name: eventName,
+                event_type: eventType,
+                event_date: eventDate,
+                event_time: `${startTime} - ${endTime}`,
+                guest_count: guestCount,
+                additional_services: additionalServices,
+                total_price: amount
+            })
         });
-        const { clientSecret } = await response.json();
 
-        elements = stripe.elements({ clientSecret });
-        const paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
+        const data = await response.json();
+
+        if (response.ok) {
+            // Redirect the user to PayPal's approval URL
+            window.location.href = data.approval_url;
+        } else {
+            console.error('Error:', data.error);
+            alert('Failed to initialize payment: ' + data.error);
+        }
     } catch (error) {
         console.error('Error:', error);
+        alert('An error occurred while initializing payment.');
     }
 }
 
-// Initialize PayPal
-paypal.Buttons({
-    createOrder: function(data, actions) {
-        return actions.order.create({
-            purchase_units: [{
-                amount: {
-                    value: document.getElementById('total-price').textContent
-                }
-            }]
-        });
-    },
-    onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-            alert('Transaction completed by ' + details.payer.name.given_name);
-            window.location.href = '/booking-confirmation';
-        });
-    },
-    onError: function(err) {
-        console.error('PayPal error:', err);
-        alert('An error occurred during payment');
-    }
-}).render('#paypal-button-container');
-
 // Event Listeners
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeTimeOptions();
 
     // Time selection changes
@@ -115,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('end-time').addEventListener('change', calculatePrice);
 
     // Form submissions
-    document.getElementById('booking-step-1').onsubmit = function(event) {
+    document.getElementById('booking-step-1').onsubmit = function (event) {
         event.preventDefault();
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
@@ -128,57 +144,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    document.getElementById('booking-step-2').onsubmit = function(event) {
+    document.getElementById('booking-step-2').onsubmit = function (event) {
         event.preventDefault();
         const date = document.getElementById('date').value;
         const startTime = document.getElementById('start-time').value;
         const endTime = document.getElementById('end-time').value;
         const price = calculatePrice();
 
-        console.log(date, startTime, endTime, price);
-        
-
         if (date && startTime && endTime && price > 0) {
-            document.getElementById('summary-date').textContent = document.getElementById('date').value;
-            document.getElementById('summary-time').textContent = 
-                `${document.getElementById('start-time').value} - ${document.getElementById('end-time').value}`;
-            document.getElementById('summary-price').textContent = document.getElementById('total-price').textContent;
+            document.getElementById('summary-date').textContent = date;
+            document.getElementById('summary-time').textContent = `${startTime} - ${endTime}`;
+            document.getElementById('summary-price').textContent = price;
 
-            // Initialize payment
-            const amount = parseInt(document.getElementById('total-price').textContent);
-            initializePayment(amount);
             showStep(3);
         } else {
             alert('Please fill in all fields');
         }
     };
 
-    document.getElementById('step-2-prev').onclick = function() {
+    document.getElementById('step-2-prev').onclick = function () {
         showStep(1);
     };
 
-    document.getElementById('step-3-prev').onclick = function() {
+    document.getElementById('step-3-prev').onclick = function () {
         showStep(2);
     };
 
     // Payment submission
-    document.getElementById('booking-step-3').onsubmit = async function(event) {
+    document.getElementById('booking-step-3').onsubmit = async function (event) {
         event.preventDefault();
-        try {
-            const { error } = await stripe.confirmPayment({
-                elements,
-                confirmParams: {
-                    return_url: window.location.origin + '/booking-confirmation',
-                },
-            });
-
-            if (error) {
-                console.error('Payment error:', error);
-                alert('Payment failed: ' + error.message);
-            }
-        } catch (e) {
-            console.error('Error:', e);
-            alert('An error occurred during payment');
-        }
+        const amount = parseInt(document.getElementById('total-price').textContent);
+        await initializePayment(amount);
     };
 });
